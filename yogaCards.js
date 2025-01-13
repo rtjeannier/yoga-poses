@@ -1,20 +1,34 @@
 class YogaCard {
-    constructor(poseName, baseCost) {
+    constructor(poseName, activationCost) {
         this.poseName = poseName;
-        this.baseCost = baseCost;
+        this.activationCost = activationCost;
         this.categories = [];
-        this.discounts = {};
+        this.transitions = {};
+        this.chakraType = '';
+        this.activatedEffect = '';
+        this.discardEffect = '';
         this.width = 175;
         this.height = 300;
         
-        // Position categories with their colors
+        // Position categories with their colors - Adjusted y positions
         this.categoryColors = {
-            inversion: { color: '#8F00FF', y: 45 },  // Purple (top)
-            standing: { color: '#228B22', y: 85 },    // Forest Green
-            kneeling: { color: '#DAA520', y: 125 },   // Goldenrod
-            seated: { color: '#CD853F', y: 165 },     // Peru
-            supine: { color: '#4169E1', y: 205 },     // Royal Blue
-            prone: { color: '#B22222', y: 245 }       // Firebrick (bottom)
+            inversion: { color: '#8F00FF', y: 70 },  // Purple
+            standing: { color: '#228B22', y: 110 },   // Forest Green
+            kneeling: { color: '#DAA520', y: 150 },  // Goldenrod
+            seated: { color: '#CD853F', y: 190 },    // Peru
+            supine: { color: '#4169E1', y: 230 },    // Royal Blue
+            prone: { color: '#B22222', y: 270 }      // Firebrick
+        };
+
+        // Chakra colors and effects
+        this.chakraStyles = {
+            root: { color: '#ff6b6b', opacity: 0.1 },
+            sacral: { color: '#ffd93d', opacity: 0.1 },
+            solar: { color: '#6c757d', opacity: 0.1 },
+            heart: { color: '#95d5b2', opacity: 0.1 },
+            throat: { color: '#8ecae6', opacity: 0.1 },
+            thirdEye: { color: '#7209b7', opacity: 0.1 },
+            crown: { color: '#9b5de5', opacity: 0.1 }
         };
     }
 
@@ -22,57 +36,106 @@ class YogaCard {
         this.categories = categories.split('|').map(c => c.trim());
     }
 
-    setDiscounts(discounts) {
-        this.discounts = {
-            inversion: discounts.inversion === 'X' ? 'X' : (parseInt(discounts.inversion) || 0),
-            standing: discounts.standing === 'X' ? 'X' : (parseInt(discounts.standing) || 0),
-            kneeling: discounts.kneeling === 'X' ? 'X' : (parseInt(discounts.kneeling) || 0),
-            seated: discounts.seated === 'X' ? 'X' : (parseInt(discounts.seated) || 0),
-            supine: discounts.supine === 'X' ? 'X' : (parseInt(discounts.supine) || 0),
-            prone: discounts.prone === 'X' ? 'X' : (parseInt(discounts.prone) || 0)
-        };
+    setTransitions(transitions) {
+        this.transitions = transitions;
     }
 
+    setChakraType(chakraType) {
+        this.chakraType = chakraType.toLowerCase();
+    }
+
+    setEffects(activatedEffect, discardEffect) {
+        this.activatedEffect = activatedEffect;
+        this.discardEffect = discardEffect;
+    }
+
+    // Helper function to wrap text within bounds
+    wrapText(text, width) {
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+            if (currentLine.length + words[i].length + 1 <= width) {
+                currentLine += ' ' + words[i];
+            } else {
+                lines.push(currentLine);
+                currentLine = words[i];
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    }
     generateSVG() {
         let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${this.width} ${this.height}">
             <!-- Card background -->
             <rect width="${this.width}" height="${this.height}" fill="white" stroke="black" stroke-width="2"/>
             
-            <!-- Pose name -->
-            <text x="${this.width/2}" y="30" text-anchor="middle" font-family="Arial" font-size="16">${this.poseName}</text>
+            <!-- Chakra background -->
+            <rect width="${this.width}" height="${this.height}" 
+                fill="${this.chakraStyles[this.chakraType]?.color || '#ffffff'}" 
+                fill-opacity="${this.chakraStyles[this.chakraType]?.opacity || 0.1}"/>
             
-            <!-- Base cost -->
-            <text x="${this.width/2}" y="${this.height - 20}" text-anchor="middle" font-family="Arial" font-size="14">Base Cost: ${this.baseCost}</text>`;
-
-        // Add left side category indicators
-        this.categories.forEach((category, index) => {
+            <!-- Activation Cost -->
+            <circle cx="25" cy="25" r="15" fill="white" stroke="#333" stroke-width="1.5"/>
+            <text x="25" y="29" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold">${this.activationCost}</text>
+            
+            <!-- Pose name - adjusted to avoid energy cost -->
+            <text x="100" y="30" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold"
+                transform="translate(0,0)">${this.poseName}</text>`;
+   
+        // Add current position indicators (left side)
+        this.categories.forEach(category => {
             const catData = this.categoryColors[category];
             if (catData) {
                 svg += `<rect x="0" y="${catData.y}" width="20" height="30" fill="${catData.color}"/>`;
             }
         });
 
-        // Add right side - only show color boxes for valid transitions
+        // Add transitions (right side)
         Object.entries(this.categoryColors).forEach(([category, data]) => {
-            const discount = this.discounts[category];
+            const transitionValue = this.transitions[category];
             
-            if (discount === 'X') {
-                // Just show an X with no color box
-                svg += `<text x="${this.width - 10}" y="${data.y + 20}" 
-                    text-anchor="middle" font-family="Arial" fill="black" font-size="14" font-weight="bold">
-                    X
-                </text>`;
-            } else {
-                // Show color box with discount number for valid transitions
-                svg += `<rect x="${this.width - 20}" y="${data.y}" width="20" height="30" fill="${data.color}"/>
-                <text x="${this.width - 10}" y="${data.y + 20}" 
-                    text-anchor="middle" font-family="Arial" fill="white" font-size="14">
-                    ${discount}
-                </text>`;
+            if (transitionValue) {
+                // Always draw the color rectangle if there's a transition
+                svg += `<rect x="${this.width - 20}" y="${data.y}" width="20" height="30" fill="${data.color}"/>`;
+                
+                // Only add circle and number if value is not zero
+                if (transitionValue !== '0') {
+                    // Format number: ensure positive numbers have a + sign
+                    const formattedValue = parseInt(transitionValue) > 0 ? 
+                        `+${parseInt(transitionValue)}` : transitionValue;
+                        
+                    svg += `
+                        <circle cx="${this.width - 10}" cy="${data.y + 20}" r="10" fill="white" stroke="${data.color}"/>
+                        <text x="${this.width - 10}" y="${data.y + 24}" 
+                            text-anchor="middle" font-family="Arial" fill="${data.color}" font-size="12">
+                            ${formattedValue}
+                        </text>`;
+                }
             }
         });
 
-        svg += '</svg>';
+        // Add effect boxes with text wrapping
+        const activatedLines = this.wrapText(this.activatedEffect, 20);
+        svg += `
+            <g>
+                <rect x="25" y="160" width="125" height="70" fill="#f8f8f8" stroke="#ccc" rx="5"/>
+                <text x="${this.width/2}" y="175" text-anchor="middle" font-family="Arial" font-size="12">Activate:</text>`;
+        
+        activatedLines.forEach((line, index) => {
+            svg += `<text x="${this.width/2}" y="${190 + (index * 15)}" text-anchor="middle" 
+                font-family="Arial" font-size="11">${line}</text>`;
+        });
+        
+        svg += `</g>
+            
+            <text x="${this.width/2}" y="245" text-anchor="middle" font-family="Arial" font-size="14">- or -</text>
+            
+            <rect x="25" y="255" width="125" height="25" fill="#f8f8f8" stroke="#ccc" rx="5"/>
+            <text x="${this.width/2}" y="272" text-anchor="middle" font-family="Arial" font-size="11">Discard: ${this.discardEffect}</text>
+        </svg>`;
+
         return svg;
     }
 }
@@ -91,18 +154,27 @@ function parseCSVData(csvText) {
         const cardData = {
             name: values[0].trim(),
             categories: values[1].trim(),
-            baseCost: parseInt(values[2]),
-            discounts: {
-                inversion: values[3].trim(),
-                standing: values[4].trim(),
-                kneeling: values[5].trim(),
-                supine: values[6].trim(),
+            activationCost: parseInt(values[2]),
+            chakraType: values[3].trim(),
+            transitions: {
+                inversion: values[4].trim(),
+                standing: values[5].trim(),
+                kneeling: values[6].trim(),
                 seated: values[7].trim(),
-                prone: values[8].trim()
-            }
+                supine: values[8].trim(),
+                prone: values[9].trim()
+            },
+            activatedEffect: values[10].trim(),
+            discardEffect: values[11].trim()
         };
         
-        cards.push(cardData);
+        const card = new YogaCard(cardData.name, cardData.activationCost);
+        card.setCategories(cardData.categories);
+        card.setChakraType(cardData.chakraType);
+        card.setTransitions(cardData.transitions);
+        card.setEffects(cardData.activatedEffect, cardData.discardEffect);
+        
+        cards.push(card);
     }
 
     return cards;
@@ -111,18 +183,14 @@ function parseCSVData(csvText) {
 // Load and display cards
 window.onload = function() {
     const cardsContainer = document.getElementById('cards');
-    const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI8UsAlO_CXg3Yk-ZBFy2Ez2tzDjV5a-YJ1LsS2dPiuzOA-7wbHIAsKGg2IxEAbUrDnmozLDDqC79I/pub?gid=0&single=true&output=csv';
+    const GOOGLE_SHEETS_URL = 'fail';
     const LOCAL_CSV_PATH = 'data/default-poses.csv';
     
     function displayCards(csvText) {
         const cards = parseCSVData(csvText);
         cardsContainer.innerHTML = ''; // Clear any error messages
         
-        cards.forEach(cardData => {
-            const card = new YogaCard(cardData.name, cardData.baseCost);
-            card.setCategories(cardData.categories);
-            card.setDiscounts(cardData.discounts);
-            
+        cards.forEach(card => {
             const div = document.createElement('div');
             div.className = 'card';
             div.innerHTML = card.generateSVG();
