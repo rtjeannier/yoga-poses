@@ -1,0 +1,32 @@
+poseName,categories,baseCost,inversionDiscount,standingDiscount,kneelingDiscount,supineDiscount,seatedDiscount,proneDiscount
+Mountain Pose,standing,1,0,-1,-1,X,X,X
+Forward Fold,standing|kneeling,2,0,-1,-1,X,-1,X
+Downward Dog,standing|kneeling,2,0,-1,-1,X,0,0
+Child's Pose,kneeling,1,X,0,-1,0,-1,0
+Table Top,kneeling,1,0,0,-1,0,0,0
+Cat Pose,kneeling,1,X,X,-1,0,0,0
+Cow Pose,kneeling,1,X,X,-1,0,0,0
+Plank Pose,kneeling,2,0,0,-1,X,X,0
+Chaturanga,kneeling|prone,3,X,X,-2,X,X,-2
+Staff Pose,seated,1,X,0,-1,-1,-1,0
+Bound Angle,seated,2,X,X,-1,-1,-1,X
+Seated Forward Fold,seated,2,X,X,-1,-1,-1,X
+Boat Pose,seated,3,X,0,-1,-1,-1,X
+Corpse Pose,supine,1,X,X,0,-1,0,0
+Bridge Pose,supine,3,X,X,0,-1,0,0
+Fish Pose,supine,2,X,X,X,-1,0,X
+Shoulder Stand,inversion|supine,4,-1,X,X,-1,X,X
+Plow Pose,inversion|supine,4,-1,X,X,-1,X,X
+Cobra Pose,prone,2,X,X,0,0,X,-1
+Upward Dog,prone,3,X,X,0,0,X,-1
+Bow Pose,prone,4,X,X,X,0,X,-1
+Warrior I,standing,2,X,-1,-1,X,X,X
+Warrior II,standing,2,X,-1,-1,X,X,X
+Triangle Pose,standing,3,X,-1,-1,X,X,X
+Half Moon,standing,4,-1,-1,X,X,X,X
+Tree Pose,standing,3,X,-1,X,X,X,X
+Crow Pose,kneeling|inversion,4,-1,X,-2,X,X,X
+Headstand,inversion,5,-2,X,X,X,X,X
+Handstand,inversion,5,-2,0,0,X,X,X
+Forearm Stand,inversion,5,-2,X,0,X,X,X
+Dolphin,kneeling,2,-1,0,-1,X,0,0

@@ -112,25 +112,51 @@ function parseCSVData(csvText) {
 window.onload = function() {
     const cardsContainer = document.getElementById('cards');
     const GOOGLE_SHEETS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTI8UsAlO_CXg3Yk-ZBFy2Ez2tzDjV5a-YJ1LsS2dPiuzOA-7wbHIAsKGg2IxEAbUrDnmozLDDqC79I/pub?gid=0&single=true&output=csv';
+    const LOCAL_CSV_PATH = 'data/default-poses.csv';
     
-    fetch(GOOGLE_SHEETS_URL)
-        .then(response => response.text())
-        .then(csvText => {
-            const cards = parseCSVData(csvText);
+    function displayCards(csvText) {
+        const cards = parseCSVData(csvText);
+        cardsContainer.innerHTML = ''; // Clear any error messages
+        
+        cards.forEach(cardData => {
+            const card = new YogaCard(cardData.name, cardData.baseCost);
+            card.setCategories(cardData.categories);
+            card.setDiscounts(cardData.discounts);
             
-            cards.forEach(cardData => {
-                const card = new YogaCard(cardData.name, cardData.baseCost);
-                card.setCategories(cardData.categories);
-                card.setDiscounts(cardData.discounts);
-                
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = card.generateSVG();
-                cardsContainer.appendChild(div);
-            });
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = card.generateSVG();
+            cardsContainer.appendChild(div);
+        });
+    }
+
+    // Try Google Sheets first, fall back to local if it fails
+    fetch(GOOGLE_SHEETS_URL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(csvText => {
+            displayCards(csvText);
         })
         .catch(error => {
-            console.error('Error loading CSV:', error);
-            cardsContainer.innerHTML = 'Error loading cards data.';
+            console.warn('Failed to load from Google Sheets, using local data:', error);
+            // Try to load local CSV file
+            fetch(LOCAL_CSV_PATH)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load local CSV');
+                    }
+                    return response.text();
+                })
+                .then(csvText => {
+                    displayCards(csvText);
+                })
+                .catch(localError => {
+                    console.error('Failed to load both remote and local data:', localError);
+                    cardsContainer.innerHTML = 'Error loading cards data from both sources.';
+                });
         });
 };
