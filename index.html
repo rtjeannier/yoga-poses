@@ -1,31 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Yoga Cards</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga Flow Game</title>
+    
+    <!-- React -->
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
     <style>
         .card {
-            display: inline-block;
-            margin: 10px;
-            /* Control the size of each card */
-            width: 175px;  /* Match the SVG width */
-            height: 300px; /* Match the SVG height */
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-        .card svg {
-            width: 100%;
-            height: 100%;
+        .container {
+            padding: 1rem;
         }
-
-        #cards {
-            /* Container for all cards */
-            max-width: 800px;  /* Adjust this value to control overall width */
-            margin: 0 auto;    /* Center the container */
-            padding: 20px;
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        .flex {
+            display: flex;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        .text-xl {
+            font-size: 1.25rem;
+        }
+        .font-bold {
+            font-weight: bold;
+        }
+        .button {
+            padding: 0.5rem 1rem;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .cursor-pointer {
+            cursor: pointer;
         }
     </style>
 </head>
-<body>
-    <div id="cards"></div>
-    <script src="yogaCards.js"></script>
+<body style="background-color: #f3f4f6;">
+    <div id="root"></div>
+
+    <!-- Game Component -->
+    <script type="text/babel" src="yoga-game.js"></script>
 </body>
 </html>
